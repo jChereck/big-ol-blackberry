@@ -18,8 +18,8 @@ void build(Matrix &tree, int rowstart, int rowend, int c)
 
     tree.sortRowsByCol(c, rowstart, rowend);
 
-    printf("start: %d end: %d c: %d\n", rowstart, rowend, c);
-    tree.print();
+    //printf("start: %d end: %d c: %d\n", rowstart, rowend, c);
+    //tree.print();
 
     split = (rowstart + rowend)/2;
     if ((split-1)-rowstart>0) build(tree, rowstart, split-1, c+1);
@@ -36,11 +36,12 @@ double myDist(Matrix &x, int r, Matrix &item) {
 }
 
 int compElm(Matrix &tree, int r, Matrix &item, int c){
-	if( tree.get(r, c) < item.get(0,c) ){
+	if( tree.get(r+1, c) < item.get(0,c) ){
 		return 1;
 	}else{
 		return -1;
 	}
+}
 
 // tree is a kd-tree and item is a row matrix to look up.
 void nearestAux(Matrix &tree,   // the kdtree matrix
@@ -52,10 +53,14 @@ void nearestAux(Matrix &tree,   // the kdtree matrix
                 int &bestrow) {  // the row of the nearest point found so far
 
 	//if we are at the base of the tree, brute force
-	if( c >= tree.numCols() ){
+	if( c >= tree.numCols()-1 ){
+		printf("Done with tree traverse\n");
 		for( int r = rowstart; r <= rowend; r++ ){
-			if( myDist(tree, r, item) <= best ){
-				best = myDist(tree, r, item);
+			double dist = myDist(tree, r, item);
+			printf("dist is %f\n", dist);
+			if( dist <= best ){
+				printf("new shortest!\n");
+				best = dist;
 				bestrow = r;
 			}
 		}
@@ -63,12 +68,26 @@ void nearestAux(Matrix &tree,   // the kdtree matrix
 		//one you find the best row, return
 		return;
 	}
-	
-	int split = (rowstart + rowend)/2;
-	if( compElm(tree, split, item, c) < 1 ){
-		nearestAux(tree, item, split, c+1)
-	}else{
 
+	//where is split for tree
+	int split = (rowstart + rowend)/2;
+	
+	//test current split point
+	double dist = myDist(tree, split, item);
+	printf("dist is %f\n", dist);
+	if( dist <= best ){
+		printf("new shortest!\n");
+		best = dist;
+		bestrow = split;
+	}
+
+	//recurse down proper path
+	if( compElm(tree, split, item, c) < 1 ){
+		printf("recursing down from split: %d\n", split);
+		nearestAux(tree, item, split+1, rowend, c+1, best, bestrow);
+	}else{
+		printf("recursing up from split: %d\n", split);
+		nearestAux(tree, item, rowstart, split-1, c+1, best, bestrow);
 	}
 	
 
