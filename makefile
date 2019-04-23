@@ -2,7 +2,7 @@
 BIN=kdtree
 
 # what you want to name your tar/zip file:
-TARNAME=ChereckAss5CS475
+TARNAME=ChereckAss6CS475
 CXX=g++
 
 CXXFLAGS=-O3 -Wall   # optimize
