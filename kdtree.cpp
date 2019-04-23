@@ -43,13 +43,13 @@ int compElm(Matrix &tree, int r, Matrix &item, int c){
 	double tr = tree.get(r,c);
 
 	if       ( it == tr ){
-		//printf("%f = %f\n", it, tr);
+		printf("%f = %f\n", it, tr);
 		return 0;
 	}else if ( it < tr ){
-		//printf("%f < %f\n", it, tr);
+		printf("%f < %f\n", it, tr);
 		return -1;
 	}else{
-		//printf("%f > %f\n", it, tr);
+		printf("%f > %f\n", it, tr);
 		return 1;
 	}
 }
@@ -64,7 +64,8 @@ void nearestAux(Matrix &tree,   // the kdtree matrix
                 int &bestrow) {  // the row of the nearest point found so far
 
 	//if we are at the base of the tree, brute force
-	if( c >= tree.numCols()-1 ){
+	//if( c >= tree.numCols()-1 ){
+	if( c > tree.numCols()-1 ){
 		//printf("Done with tree traverse\n");
 		for( int r = rowstart; r <= rowend; r++ ){
 			double dist = myDist(tree, r, item);
@@ -95,12 +96,12 @@ void nearestAux(Matrix &tree,   // the kdtree matrix
 	//recurse down proper path
 	int comp = compElm(tree, split, item, c);
 	if( comp >= 0 ){
-		//printf("recursing down from split: %d\n", split);
+		printf("recursing down from split: %d\n", split);
 		nearestAux(tree, item, split+1, rowend, c+1, best, bestrow);
 	}
 
 	if (comp <= 0){
-		//printf("recursing up from split: %d\n", split);
+		printf("recursing up from split: %d\n", split);
 		nearestAux(tree, item, rowstart, split-1, c+1, best, bestrow);
 	}
 	
@@ -137,6 +138,7 @@ int main()
 
     // display tree for comparison in tests
     printf("KDTree version of matrix");
+    printf("\n");
     tree.printLabeledRow(labels);
     printf("\n");
 
