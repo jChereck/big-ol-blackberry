@@ -18,6 +18,9 @@ void build(Matrix &tree, int rowstart, int rowend, int c)
 
     tree.sortRowsByCol(c, rowstart, rowend);
 
+    printf("start: %d end: %d c: %d\n", rowstart, rowend, c);
+    tree.print();
+
     split = (rowstart + rowend)/2;
     if ((split-1)-rowstart>0) build(tree, rowstart, split-1, c+1);
     if (rowend-(split+1)>0) build(tree, split+1, rowend, c+1);
@@ -32,7 +35,12 @@ double myDist(Matrix &x, int r, Matrix &item) {
     return sqrt(x.subMatrix(r, 1, 1, 0).dist2(item));
 }
 
-
+int compElm(Matrix &tree, int r, Matrix &item, int c){
+	if( tree.get(r, c) < item.get(0,c) ){
+		return 1;
+	}else{
+		return -1;
+	}
 
 // tree is a kd-tree and item is a row matrix to look up.
 void nearestAux(Matrix &tree,   // the kdtree matrix
@@ -42,13 +50,27 @@ void nearestAux(Matrix &tree,   // the kdtree matrix
                 int c,          // column or feature to compare
                 double &best,   // the distance to nearest point found so far
                 int &bestrow) {  // the row of the nearest point found so far
-//
-//
-//
-//   MISSING CODE
-//
-//
-//
+
+	//if we are at the base of the tree, brute force
+	if( c >= tree.numCols() ){
+		for( int r = rowstart; r <= rowend; r++ ){
+			if( myDist(tree, r, item) <= best ){
+				best = myDist(tree, r, item);
+				bestrow = r;
+			}
+		}
+
+		//one you find the best row, return
+		return;
+	}
+	
+	int split = (rowstart + rowend)/2;
+	if( compElm(tree, split, item, c) < 1 ){
+		nearestAux(tree, item, split, c+1)
+	}else{
+
+	}
+	
 
     return;
 }
