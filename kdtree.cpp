@@ -43,13 +43,13 @@ int compElm(Matrix &tree, int r, Matrix &item, int c){
 	double tr = tree.get(r,c);
 
 	if       ( it == tr ){
-		printf("%f = %f\n", it, tr);
+		//printf("%f = %f\n", it, tr);
 		return 0;
 	}else if ( it < tr ){
-		printf("%f < %f\n", it, tr);
+		//printf("%f < %f\n", it, tr);
 		return -1;
 	}else{
-		printf("%f > %f\n", it, tr);
+		//printf("%f > %f\n", it, tr);
 		return 1;
 	}
 }
@@ -71,7 +71,7 @@ void nearestAux(Matrix &tree,   // the kdtree matrix
 			double dist = myDist(tree, r, item);
 			//printf("dist is %f\n", dist);
 			if( dist < best ){
-				//printf("new shortest!\n");
+				//printf("new shortest! %f\n", dist);
 				best = dist;
 				bestrow = r;
 			}
@@ -88,7 +88,7 @@ void nearestAux(Matrix &tree,   // the kdtree matrix
 	double dist = myDist(tree, split, item);
 	//printf("dist is %f\n", dist);
 	if( dist < best ){
-		//printf("new shortest!\n");
+		//printf("new shortest %f!\n", dist);
 		best = dist;
 		bestrow = split;
 	}
@@ -96,12 +96,30 @@ void nearestAux(Matrix &tree,   // the kdtree matrix
 	//recurse down proper path
 	int comp = compElm(tree, split, item, c);
 	if( comp >= 0 ){
-		printf("recursing down from split: %d\n", split);
+		//printf("recursing down from split: %d\n", split);
+		
+		double itemSplit = abs( (tree.get(bestrow,c)-item.get(0,c-1)) );
+		double bestItem = abs( (tree.get(bestrow,c)-tree.get(split, c)) );
+		//if( (tree.get(bestrow,c)+item.get(0,c-1))/2 >= (tree.get(bestrow,c)+tree.get(split, c)) / 2 ){
+		//printf("itemSplit %f vs bestItem %f\n", itemSplit, bestItem);
+		if( itemSplit >= bestItem ){
+			//printf("extra split up\n");
+			nearestAux(tree,item,rowstart,split-1, c+1, best, bestrow);
+		}
 		nearestAux(tree, item, split+1, rowend, c+1, best, bestrow);
 	}
 
 	if (comp <= 0){
-		printf("recursing up from split: %d\n", split);
+		//printf("recursing up from split: %d\n", split);
+
+		double itemSplit = abs( (tree.get(bestrow,c)-item.get(0,c-1)) );
+		double bestItem = abs( (tree.get(bestrow,c)-tree.get(split, c)) );
+		//printf("itemSplit %f vs bestItem %f\n", itemSplit, bestItem);
+		//if( (tree.get(bestrow,c)+item.get(0,c-1))/2 >= (tree.get(bestrow,c)+tree.get(split, c)) / 2 ){
+		if( itemSplit >= bestItem ){
+			//printf("extra split down\n");
+			nearestAux(tree,item,split+1,rowend, c+1, best, bestrow);
+		}
 		nearestAux(tree, item, rowstart, split-1, c+1, best, bestrow);
 	}
 	
